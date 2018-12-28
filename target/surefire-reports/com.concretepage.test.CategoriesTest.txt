@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.concretepage.test.CategoriesTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.259 s - in com.concretepage.test.CategoriesTest
