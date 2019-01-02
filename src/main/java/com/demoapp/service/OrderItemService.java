@@ -109,11 +109,18 @@ public class OrderItemService {
 		OrderItem orderItem = orderItemRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Order item not found for this id :: " + id));
 
+		Long orderItemId = null;
 		if (orderItem.getOrder() != null) {
-			elasticService.refreshOrder(orderItem.getOrder().getId());
+			orderItemId = orderItem.getOrder().getId();
+
 		}
 
 		orderItemRepository.delete(orderItem);
+
+		if (orderItemId != null) {
+			elasticService.refreshOrder(orderItem.getOrder().getId());
+		}
+
 		logger.info("Delete {}", id);
 
 	}
