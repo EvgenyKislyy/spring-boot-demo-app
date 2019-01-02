@@ -15,3 +15,8 @@ swagger
 
 http://localhost:8080/swagger-ui.html
 
+
+postman client
+
+https://www.getpostman.com/collections/4a341be362ca17820264
+

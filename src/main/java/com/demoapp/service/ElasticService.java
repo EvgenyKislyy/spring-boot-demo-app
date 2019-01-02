@@ -1,8 +1,8 @@
 package com.demoapp.service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.slf4j.Logger;
@@ -30,14 +30,8 @@ public class ElasticService {
 
 	public void insert(Long id, List<String> names) {
 		try {
-			Order order = new Order();
-			order.setOrderId(id);
-			List<Product> products = new ArrayList<>();
-			for (String name : names) {
-				products.add(new Product(name));
-			}
-			order.setProducts(products);
-			eOrderRepository.save(order);
+			List<Product> products = names.stream().map(n -> new Product(n)).collect(Collectors.toList());
+			eOrderRepository.save(new Order(id, products));
 			logger.info("Names {} were inserted into order {}", names, id);
 		} catch (NoNodeAvailableException e) {
 			elasticNotAvailable();
@@ -57,7 +51,7 @@ public class ElasticService {
 	public void delete(Long id) {
 		try {
 			eOrderRepository.removeByOrderId(id);
-			logger.info("Removed for the order {}", id);
+			logger.info("The order {} was removed", id);
 		} catch (NoNodeAvailableException e) {
 			elasticNotAvailable();
 

@@ -8,16 +8,11 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-@Document(indexName = "order_index", type = "order")
+@Document(indexName = "index_order_2", type = "order")
 public class Order {
 
 	@Id
-	@JsonIgnore
-	private String id;
-
-	private Long orderId;
+	private String orderId;
 
 	@Field(type = Nested, includeInParent = true)
 	private List<Product> products;
@@ -26,20 +21,18 @@ public class Order {
 		super();
 	}
 
-	public Long getOrderId() {
+	public Order(Long orderId, List<Product> products) {
+		super();
+		this.orderId = String.valueOf(orderId);
+		this.products = products;
+	}
+
+	public String getOrderId() {
 		return orderId;
 	}
 
-	public void setOrderId(Long orderId) {
+	public void setOrderId(String orderId) {
 		this.orderId = orderId;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public List<Product> getProducts() {

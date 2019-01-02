@@ -55,11 +55,10 @@ public class OrderService {
 	public OrderDTO save(OrderDTO orderDTO) {
 		Order order = modelMapper.map(orderDTO, Order.class);
 		order = orderRepository.save(order);
-
-		order = updateOrderItems(orderDTO, order);
+		order = saveOrderItems(orderDTO.getOrderItems(), order);
+		logger.info("Save {}", order);
 
 		List<String> productNames = orderRepository.getOrderProductNames(order.getId());
-		logger.info("Save {}", order);
 		elasticService.insert(order.getId(), productNames);
 		return map(order);
 
@@ -71,16 +70,19 @@ public class OrderService {
 				.orElseThrow(() -> new ResourceNotFoundException("Order not found for this id :: " + id));
 		order.setAmount(orderDTO.getAmount());
 
+		// we remove order item ids only via order item id
 		if (orderDTO.getOrderItems() != null) {
-			order = updateOrderItems(orderDTO, order);
+			order = saveOrderItems(orderDTO.getOrderItems(), order);
 		}
 		logger.info("Update {}", order);
+
+		List<String> productNames = orderRepository.getOrderProductNames(order.getId());
+		elasticService.insert(order.getId(), productNames);
 		return map(order);
 
 	}
 
-	private Order updateOrderItems(OrderDTO orderDTO, Order order) {
-		List<Long> orderItemsIds = orderDTO.getOrderItems();
+	private Order saveOrderItems(List<Long> orderItemsIds, Order order) {
 		List<OrderItem> orderItems = orderItemsIds.stream()
 				.map(orderItemId -> orderItemRepository.findById(orderItemId).orElseThrow(
 						() -> new ResourceNotFoundException("Order item not found for this id :: " + orderItemId)))
@@ -89,7 +91,7 @@ public class OrderService {
 		orderItems.stream().forEach(item -> item.setOrder(order));
 
 		order.setOrderItems(orderItems);
-		return orderRepository.saveAndFlush(order);
+		return orderRepository.save(order);
 	}
 
 	public void delete(Long id) throws ResourceNotFoundException {

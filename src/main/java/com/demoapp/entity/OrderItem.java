@@ -21,7 +21,7 @@ public class OrderItem implements Serializable {
 	@Column(nullable = false)
 	private Long quantity;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private Product product;
 
 	@ManyToOne
