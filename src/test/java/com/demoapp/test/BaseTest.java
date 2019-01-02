@@ -7,7 +7,6 @@ import java.util.List;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -20,7 +19,6 @@ import com.demoapp.dao.CategoryRepository;
 import com.demoapp.dao.OrderItemRepository;
 import com.demoapp.dao.OrderRepository;
 import com.demoapp.dao.ProductRepository;
-import com.demoapp.dao.es.EsOrderRepository;
 import com.demoapp.dto.CategoryDTO;
 import com.demoapp.dto.OrderDTO;
 import com.demoapp.dto.OrderItemDTO;
@@ -30,9 +28,6 @@ import com.demoapp.dto.ProductDTO;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BaseTest {
-
-	@MockBean
-	private EsOrderRepository eOrderRepository;
 
 	@Autowired
 	protected TestRestTemplate restTemplate;

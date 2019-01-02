@@ -20,3 +20,6 @@ postman client
 
 https://www.getpostman.com/collections/4a341be362ca17820264
 
+
+please configure elastic and pgsql in application.properties
+
