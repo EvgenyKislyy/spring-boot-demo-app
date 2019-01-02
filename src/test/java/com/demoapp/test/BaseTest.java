@@ -95,7 +95,7 @@ public class BaseTest {
 	}
 
 	protected OrderItemDTO createOrderItem(Long quantity, Long productId, Long orderId) {
-		HttpEntity<?> request = new HttpEntity<Object>(new OrderItemDTO(quantity, productId, null));
+		HttpEntity<?> request = new HttpEntity<Object>(new OrderItemDTO(quantity, productId, orderId));
 		ResponseEntity<OrderItemDTO> response = restTemplate.exchange("/order_items", HttpMethod.POST, request,
 				OrderItemDTO.class);
 		assertTrue(response.getStatusCode().is2xxSuccessful());
