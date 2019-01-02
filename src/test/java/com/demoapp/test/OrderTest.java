@@ -1,6 +1,7 @@
 package com.demoapp.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
@@ -152,6 +153,15 @@ public class OrderTest extends BaseTest {
 		assertEquals(1, order.getOrderItems().size());
 		assertEquals(3, getOrderItems().size());
 		assertEquals(2, getProducts().size());
+	}
+
+	@Test
+	public void testEmptyOrder() {
+		cleanTestDB();
+
+		Long order1Id = createOrder(2l, null).getId();
+
+		assertNotNull(order1Id);
 	}
 
 	private void deleteOrder(Long id) {

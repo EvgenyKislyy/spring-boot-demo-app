@@ -1,6 +1,7 @@
 package com.demoapp.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,7 +56,9 @@ public class OrderService {
 	public OrderDTO save(OrderDTO orderDTO) {
 		Order order = modelMapper.map(orderDTO, Order.class);
 		order = orderRepository.save(order);
-		order = saveOrderItems(orderDTO.getOrderItems(), order);
+		if (orderDTO.getOrderItems() != null) {
+			order = saveOrderItems(orderDTO.getOrderItems(), order);
+		}
 		logger.info("Save {}", order);
 
 		elasticService.refreshOrder(order.getId());
@@ -100,7 +103,11 @@ public class OrderService {
 	}
 
 	private OrderDTO map(Order order) {
-		List<Long> orderItemIDs = order.getOrderItems().stream().map(OrderItem::getId).collect(Collectors.toList());
+		List<Long> orderItemIDs = Collections.emptyList();
+		if (order.getOrderItems() != null) {
+			orderItemIDs = order.getOrderItems().stream().map(OrderItem::getId).collect(Collectors.toList());
+		}
+
 		return new OrderDTO(order.getId(), order.getAmount(), orderItemIDs);
 	}
 
