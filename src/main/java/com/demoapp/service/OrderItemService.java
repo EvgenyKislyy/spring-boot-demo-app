@@ -62,16 +62,22 @@ public class OrderItemService {
 		OrderItem orderItem = new OrderItem();
 		updateOrderItem(orderItemDTO, orderItem);
 		logger.info("Save {}", orderItemDTO);
-		return modelMapper.map(orderItemRepository.save(orderItem), OrderItemDTO.class);
+		orderItem = orderItemRepository.save(orderItem);
+		elasticService.refreshOrder(orderItemDTO.getOrderId());
+		return modelMapper.map(orderItem, OrderItemDTO.class);
 	}
 
 	public OrderItemDTO update(Long orderItemId, OrderItemDTO orderItemDTO) throws ResourceNotFoundException {
-		OrderItem order = orderItemRepository.findById(orderItemId)
+		OrderItem orderItem = orderItemRepository.findById(orderItemId)
 				.orElseThrow(() -> new ResourceNotFoundException("Order item not found for this id :: " + orderItemId));
-
-		updateOrderItem(orderItemDTO, order);
+		updateOrderItem(orderItemDTO, orderItem);
+		orderItem = orderItemRepository.save(orderItem);
 		logger.info("Update", orderItemDTO);
-		return modelMapper.map(orderItemRepository.save(order), OrderItemDTO.class);
+		elasticService.refreshOrder(orderItemDTO.getOrderId());
+		if (orderItem.getOrder() != null) {
+			elasticService.refreshOrder(orderItem.getOrder().getId());
+		}
+		return modelMapper.map(orderItem, OrderItemDTO.class);
 
 	}
 
@@ -87,13 +93,9 @@ public class OrderItemService {
 			orderItem.setOrder(
 					orderRepository.findById(orderItemDTO.getOrderId()).orElseThrow(() -> new ResourceNotFoundException(
 							"Order not found for this id :: " + orderItemDTO.getOrderId())));
-			elasticService.refreshOrder(orderItemDTO.getOrderId());
-			// update for new order
+
 		}
-		if (orderItem.getId() != null) {
-			elasticService.refreshOrder(orderItem.getId());
-			// update for previous order
-		}
+
 		orderItem.setQuantity(orderItemDTO.getQuantity());
 
 	}
