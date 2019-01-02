@@ -54,6 +54,14 @@ public class BaseTest {
 
 	}
 
+	protected void updateOrderItem(Long id, Long quantity, Long productId, Long orderId) {
+		HttpEntity<?> request = new HttpEntity<Object>(new OrderItemDTO(quantity, productId, orderId), null);
+		ResponseEntity<OrderItemDTO> response = restTemplate.exchange("/order_items/" + id, HttpMethod.PUT, request,
+				OrderItemDTO.class);
+		assertTrue(response.getStatusCode().is2xxSuccessful());
+
+	}
+
 	protected CategoryDTO createCategory(String name) {
 		HttpEntity<?> request = new HttpEntity<Object>(new CategoryDTO(name), null);
 		ResponseEntity<CategoryDTO> response = restTemplate.exchange("/categories", HttpMethod.POST, request,

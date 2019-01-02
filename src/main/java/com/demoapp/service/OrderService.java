@@ -71,11 +71,13 @@ public class OrderService {
 		Order order = orderRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Order not found for this id :: " + id));
 		order.setAmount(orderDTO.getAmount());
+		orderRepository.save(order);
 
-		// we remove order item ids only via order item id
-		if (orderDTO.getOrderItems() != null) {
-			order = saveOrderItems(orderDTO.getOrderItems(), order);
-		}
+		/*
+		 * // we remove order item ids only via order item id if
+		 * (orderDTO.getOrderItems() != null) { order =
+		 * saveOrderItems(orderDTO.getOrderItems(), order); }
+		 */
 		logger.info("Update {}", order);
 
 		elasticService.refreshOrder(order.getId());

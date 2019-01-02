@@ -83,11 +83,6 @@ public class OrderTest extends BaseTest {
 		// new ones
 		updateOrder(order1Id, 11L, List.of(orderItem1Id, orderItem2Id, orderItem3Id));
 		order = getOrderById(order1Id);
-		assertEquals(3, order.getOrderItems().size());
-		assertEquals(Long.valueOf(11L), order.getAmount());
-
-		order = getOrderById(order2Id);
-		assertEquals(1, order.getOrderItems().size());
 
 	}
 
@@ -153,6 +148,34 @@ public class OrderTest extends BaseTest {
 		assertEquals(1, order.getOrderItems().size());
 		assertEquals(3, getOrderItems().size());
 		assertEquals(2, getProducts().size());
+	}
+
+	@Test
+	public void testOrderUpdateOrderItem() {
+		cleanTestDB();
+		Long firstCateoryId = createCategory("First category").getId();
+		Long secondCateoryId = createCategory("Second category").getId();
+
+		Long firstProductId = createProduct("First product", 2.00, "sku1", firstCateoryId).getId();
+		Long secondProductId = createProduct("Second product", 4.20, "sku2", secondCateoryId).getId();
+
+		Long orderItem1Id = createOrderItem(1l, firstProductId, null).getId();
+		Long orderItem2Id = createOrderItem(2l, secondProductId, null).getId();
+
+		Long orderItem3Id = createOrderItem(3l, firstProductId, null).getId();
+		Long orderItem4Id = createOrderItem(4l, secondProductId, null).getId();
+
+		Long order1Id = createOrder(2l, List.of(orderItem1Id, orderItem2Id)).getId();
+		Long order2Id = createOrder(3l, List.of(orderItem3Id, orderItem4Id)).getId();
+
+		updateOrderItem(orderItem3Id, 33l, firstProductId, order1Id);
+
+		OrderDTO order = getOrderById(order2Id);
+		assertEquals(1, order.getOrderItems().size());
+
+		order = getOrderById(order1Id);
+		assertEquals(3, order.getOrderItems().size());
+
 	}
 
 	@Test

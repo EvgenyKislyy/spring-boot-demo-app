@@ -2,14 +2,10 @@ package com.demoapp.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 
 import com.demoapp.dto.CategoryDTO;
 import com.demoapp.dto.OrderItemDTO;
@@ -85,14 +81,6 @@ public class OrderItemTest extends BaseTest {
 		assertEquals(1, orderItems.size());
 
 		assertEquals(2, getProducts().size());
-
-	}
-
-	private void updateOrderItem(Long id, Long quantity, Long productId, Long orderId) {
-		HttpEntity<?> request = new HttpEntity<Object>(new OrderItemDTO(quantity, productId, orderId), null);
-		ResponseEntity<OrderItemDTO> response = restTemplate.exchange("/order_items/" + id, HttpMethod.PUT, request,
-				OrderItemDTO.class);
-		assertTrue(response.getStatusCode().is2xxSuccessful());
 
 	}
 
