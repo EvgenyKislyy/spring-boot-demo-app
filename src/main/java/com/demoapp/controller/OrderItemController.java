@@ -48,7 +48,7 @@ public class OrderItemController {
 	public ResponseEntity<OrderItemDTO> update(@PathVariable(value = "id") Long id,
 			@Valid @RequestBody OrderItemDTO orderItem) throws ResourceNotFoundException {
 
-		return ResponseEntity.ok(orderItemService.updateOrderItem(id, orderItem));
+		return ResponseEntity.ok(orderItemService.update(id, orderItem));
 	}
 
 	@DeleteMapping("/{id}")

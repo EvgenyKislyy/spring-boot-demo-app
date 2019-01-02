@@ -1,9 +1,7 @@
 package com.demoapp.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -30,9 +28,6 @@ public class OrderItemService {
 
 	@Autowired
 	private OrderRepository orderRepository;
-
-	@Autowired
-	private ProductService productService;
 
 	@Autowired
 	private ModelMapper modelMapper;
@@ -64,33 +59,13 @@ public class OrderItemService {
 
 	public OrderItemDTO save(OrderItemDTO orderItemDTO) {
 
-		OrderItem order = new OrderItem();
-		updateOrderItem(orderItemDTO, order);
+		OrderItem orderItem = new OrderItem();
+		updateOrderItem(orderItemDTO, orderItem);
 		logger.info("Save {}", orderItemDTO);
-		return modelMapper.map(orderItemRepository.save(order), OrderItemDTO.class);
+		return modelMapper.map(orderItemRepository.save(orderItem), OrderItemDTO.class);
 	}
 
-	private void updateOrderItem(OrderItemDTO orderItemDTO, OrderItem orderItem) {
-		boolean productNameChanged = false;
-		if (orderItemDTO.getProductId() != null) {
-			productNameChanged = true;
-			orderItem.setProduct(productRepository.findById(orderItemDTO.getProductId())
-					.orElseThrow(() -> new ResourceNotFoundException(
-							"Product item not found for this id :: " + orderItemDTO.getProductId())));
-		}
-		if (orderItemDTO.getOrderId() != null) {
-			orderItem.setOrder(
-					orderRepository.findById(orderItemDTO.getOrderId()).orElseThrow(() -> new ResourceNotFoundException(
-							"Order item not found for this id :: " + orderItemDTO.getOrderId())));
-		}
-		orderItem.setQuantity(orderItemDTO.getQuantity());
-		if (productNameChanged) {
-			Long productID = orderItemDTO.getProductId();
-			elasticService.refreshElasticForProductId(productID);
-		}
-	}
-
-	public OrderItemDTO updateOrderItem(Long orderItemId, OrderItemDTO orderItemDTO) throws ResourceNotFoundException {
+	public OrderItemDTO update(Long orderItemId, OrderItemDTO orderItemDTO) throws ResourceNotFoundException {
 		OrderItem order = orderItemRepository.findById(orderItemId)
 				.orElseThrow(() -> new ResourceNotFoundException("Order item not found for this id :: " + orderItemId));
 
@@ -100,18 +75,35 @@ public class OrderItemService {
 
 	}
 
-	public Map<String, Boolean> delete(Long id) throws ResourceNotFoundException {
+	private void updateOrderItem(OrderItemDTO orderItemDTO, OrderItem orderItem) {
+
+		if (orderItemDTO.getProductId() != null) {
+			orderItem.setProduct(productRepository.findById(orderItemDTO.getProductId())
+					.orElseThrow(() -> new ResourceNotFoundException(
+							"Product not found for this id :: " + orderItemDTO.getProductId())));
+			elasticService.refreshProduct(orderItemDTO.getProductId());
+		}
+		if (orderItemDTO.getOrderId() != null) {
+			orderItem.setOrder(
+					orderRepository.findById(orderItemDTO.getOrderId()).orElseThrow(() -> new ResourceNotFoundException(
+							"Order not found for this id :: " + orderItemDTO.getOrderId())));
+			elasticService.refreshOrder(orderItemDTO.getProductId());
+		}
+		orderItem.setQuantity(orderItemDTO.getQuantity());
+
+	}
+
+	public void delete(Long id) throws ResourceNotFoundException {
 		OrderItem orderItem = orderItemRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Order item not found for this id :: " + id));
+
 		if (orderItem.getOrder() != null) {
 			elasticService.refreshOrder(orderItem.getOrder().getId());
 		}
-		orderItemRepository.deleteById(id);
 
+		orderItemRepository.delete(orderItem);
 		logger.info("Delete {}", id);
-		Map<String, Boolean> response = new HashMap<>();
-		response.put("deleted", Boolean.TRUE);
-		return response;
+
 	}
 
 }

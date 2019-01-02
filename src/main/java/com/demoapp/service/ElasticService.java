@@ -28,7 +28,7 @@ public class ElasticService {
 	@Autowired
 	private OrderRepository orderRepository;
 
-	public void refreshElasticForProductId(Long id) {
+	public void refreshProduct(Long id) {
 		List<Long> ids = orderRepository.getOrderIdsByProductId(id);
 		logger.info("Refresh elastic by product id {}", id);
 		refreshOrders(ids);
