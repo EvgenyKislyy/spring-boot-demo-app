@@ -17,7 +17,8 @@ import com.demoapp.dto.OrderDTO;
 public class OrderTest extends BaseTest {
 
 	@Test
-	public void testOrders() {
+	public void testCreateAndRead() {
+		cleanTestDB();
 		List<OrderDTO> orders = getOrders();
 
 		assertTrue(orders.isEmpty());
@@ -55,14 +56,65 @@ public class OrderTest extends BaseTest {
 		assertEquals(orderItem3Id, orders.get(1).getOrderItems().get(0));
 		assertEquals(orderItem4Id, orders.get(1).getOrderItems().get(1));
 		assertEquals(Long.valueOf(3l), orders.get(1).getAmount());
+	}
+
+	@Test
+	public void testUpdate() {
+		cleanTestDB();
+		Long firstCateoryId = createCategory("First category").getId();
+		Long secondCateoryId = createCategory("Second category").getId();
+
+		Long firstProductId = createProduct("First product", 2.00, "sku1", firstCateoryId).getId();
+		Long secondProductId = createProduct("Second product", 4.20, "sku2", secondCateoryId).getId();
+
+		Long orderItem1Id = createOrderItem(1l, firstProductId, null).getId();
+		Long orderItem2Id = createOrderItem(2l, secondProductId, null).getId();
+
+		Long orderItem3Id = createOrderItem(3l, firstProductId, null).getId();
+		Long orderItem4Id = createOrderItem(4l, secondProductId, null).getId();
+
+		List<Long> orderItems1 = List.of(orderItem1Id, orderItem2Id);
+		List<Long> orderItems2 = List.of(orderItem3Id, orderItem4Id);
+
+		Long order1Id = createOrder(2l, orderItems1).getId();
+		Long order2Id = createOrder(3l, orderItems2).getId();
 
 		updateOrder(order1Id, 10L, Collections.emptyList());
 
 		OrderDTO order = getOrderById(order1Id);
 		assertEquals(Long.valueOf(10l), order.getAmount());
 
-		orders = getOrders();
+		// remove order item from order via order item crud api
+		updateOrder(order1Id, 11L, List.of(orderItem1Id, orderItem2Id, orderItem3Id));
+		order = getOrderById(order1Id);
+		assertEquals(3, order.getOrderItems().size());
+		assertEquals(Long.valueOf(11L), order.getAmount());
+		order = getOrderById(order2Id);
+		assertEquals(1, order.getOrderItems().size());
 
+	}
+
+	@Test
+	public void testDelete() {
+		cleanTestDB();
+		Long firstCateoryId = createCategory("First category").getId();
+		Long secondCateoryId = createCategory("Second category").getId();
+
+		Long firstProductId = createProduct("First product", 2.00, "sku1", firstCateoryId).getId();
+		Long secondProductId = createProduct("Second product", 4.20, "sku2", secondCateoryId).getId();
+
+		Long orderItem1Id = createOrderItem(1l, firstProductId, null).getId();
+		Long orderItem2Id = createOrderItem(2l, secondProductId, null).getId();
+
+		Long orderItem3Id = createOrderItem(3l, firstProductId, null).getId();
+		Long orderItem4Id = createOrderItem(4l, secondProductId, null).getId();
+
+		List<Long> orderItems1 = List.of(orderItem1Id, orderItem2Id);
+		List<Long> orderItems2 = List.of(orderItem3Id, orderItem4Id);
+
+		Long order1Id = createOrder(2l, orderItems1).getId();
+		Long order2Id = createOrder(3l, orderItems2).getId();
+		List<OrderDTO> orders = getOrders();
 		assertEquals(2, orders.size());
 
 		deleteOrder(order1Id);
@@ -76,11 +128,10 @@ public class OrderTest extends BaseTest {
 		assertEquals(2, getProducts().size());
 
 		deleteOrderItem(orderItem4Id);
-		order = getOrderById(order2Id);
+		OrderDTO order = getOrderById(order2Id);
 		assertEquals(1, order.getOrderItems().size());
 
 		assertEquals(2, getProducts().size());
-
 	}
 
 	private void deleteOrder(Long id) {

@@ -15,7 +15,8 @@ import com.demoapp.dto.ProductDTO;
 public class ProductTest extends BaseTest {
 
 	@Test
-	public void testProducts() {
+	public void testCreateAndRead() {
+		cleanTestDB();
 		List<ProductDTO> products = getProducts();
 
 		assertTrue(products.isEmpty());
@@ -40,7 +41,16 @@ public class ProductTest extends BaseTest {
 		assertEquals("sku2", products.get(1).getSku());
 		// assertEquals("Second category", products.get(1).getCategory().getName());
 
-		Long firstId = products.get(0).getId();
+	}
+
+	@Test
+	public void testUpdate() {
+		cleanTestDB();
+		Long idCategory1 = createCategory("First category").getId();
+		Long idCategory2 = createCategory("Second category").getId();
+
+		Long firstId = createProduct("First product", 2.00, "sku1", idCategory1).getId();
+		Long secondId = createProduct("Second product", 4.20, "sku2", idCategory2).getId();
 
 		updateProduct(firstId, "1st product", 2.2, "sku-1", idCategory2);
 
@@ -49,9 +59,18 @@ public class ProductTest extends BaseTest {
 		assertEquals(Double.valueOf(2.20), product.getPrice());
 		assertEquals("sku-1", product.getSku());
 		assertEquals(idCategory2, product.getCategoryId());
+	}
 
-		products = getProducts();
+	@Test
+	public void testDelete() {
+		cleanTestDB();
+		Long idCategory1 = createCategory("First category").getId();
+		Long idCategory2 = createCategory("Second category").getId();
 
+		Long firstId = createProduct("First product", 2.00, "sku1", idCategory1).getId();
+		Long secondId = createProduct("Second product", 4.20, "sku2", idCategory2).getId();
+
+		List<ProductDTO> products = getProducts();
 		assertEquals(2, products.size());
 
 		deleteProduct(firstId);
