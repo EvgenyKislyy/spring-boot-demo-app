@@ -97,7 +97,7 @@ public class ProductTest extends BaseTest {
 	}
 
 	private void updateProduct(Long id, String name, Double price, String sku, Long categoryId) {
-		HttpEntity<?> request = new HttpEntity<Object>(new ProductDTO("1st product", 2.2, "sku-1", categoryId), null);
+		HttpEntity<?> request = new HttpEntity<Object>(new ProductDTO(name, price, sku, categoryId), null);
 		ResponseEntity<ProductDTO> response = restTemplate.exchange("/products/" + id, HttpMethod.PUT, request,
 				ProductDTO.class);
 		assertTrue(response.getStatusCode().is2xxSuccessful());

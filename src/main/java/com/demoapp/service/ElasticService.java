@@ -69,7 +69,9 @@ public class ElasticService {
 		logger.error("Refreshing elastic for orders: {}", ids);
 		try {
 			for (Long orderId : ids) {
-				refreshOrder(orderId);
+				if (orderId != null) {
+					refreshOrder(orderId);
+				}
 			}
 		} catch (NoNodeAvailableException e) {
 			elasticNotAvailable();
