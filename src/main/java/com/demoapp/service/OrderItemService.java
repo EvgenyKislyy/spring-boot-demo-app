@@ -70,12 +70,17 @@ public class OrderItemService {
 	public OrderItemDTO update(Long orderItemId, OrderItemDTO orderItemDTO) throws ResourceNotFoundException {
 		OrderItem orderItem = orderItemRepository.findById(orderItemId)
 				.orElseThrow(() -> new ResourceNotFoundException("Order item not found for this id :: " + orderItemId));
+
+		Long oldOrderItem = null;
+		if (orderItem.getOrder() != null) {
+			oldOrderItem = orderItem.getOrder().getId();
+		}
 		updateOrderItem(orderItemDTO, orderItem);
 		orderItem = orderItemRepository.save(orderItem);
 		logger.info("Update", orderItemDTO);
 		elasticService.refreshOrder(orderItemDTO.getOrderId());
-		if (orderItem.getOrder() != null) {
-			elasticService.refreshOrder(orderItem.getOrder().getId());
+		if (oldOrderItem != null) {
+			elasticService.refreshOrder(oldOrderItem);
 		}
 		return modelMapper.map(orderItem, OrderItemDTO.class);
 
