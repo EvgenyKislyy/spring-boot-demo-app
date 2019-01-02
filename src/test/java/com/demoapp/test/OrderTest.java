@@ -160,8 +160,11 @@ public class OrderTest extends BaseTest {
 		cleanTestDB();
 
 		Long order1Id = createOrder(2l, null).getId();
-
 		assertNotNull(order1Id);
+		OrderDTO order = getOrderById(order1Id);
+		assertTrue(order.getOrderItems().isEmpty());
+		assertEquals(Long.valueOf(2L), order.getAmount());
+
 	}
 
 	private void deleteOrder(Long id) {
