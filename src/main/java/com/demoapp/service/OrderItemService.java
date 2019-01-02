@@ -99,6 +99,8 @@ public class OrderItemService {
 					orderRepository.findById(orderItemDTO.getOrderId()).orElseThrow(() -> new ResourceNotFoundException(
 							"Order not found for this id :: " + orderItemDTO.getOrderId())));
 
+		} else {
+			orderItem.setOrder(null);
 		}
 
 		orderItem.setQuantity(orderItemDTO.getQuantity());
