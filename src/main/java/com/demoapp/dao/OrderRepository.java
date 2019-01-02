@@ -24,4 +24,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	@Query("select oi.id from Order o inner join o.orderItems oi where o.id = ?1")
 	List<Long> getOrderItemIdsByOrderId(Long id);
 
+	@Query("select o.id from Order o inner join o.orderItems oi inner join oi.product p where p.id = ?1")
+	List<Long> getOrderIdsByProductId(Long productId);
+
 }

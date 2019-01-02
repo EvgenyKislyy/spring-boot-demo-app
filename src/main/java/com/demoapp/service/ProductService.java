@@ -82,7 +82,7 @@ public class ProductService {
 
 		product = productRepository.save(product);
 		if (nameChanged) {
-			refreshElasticForProductId(id);
+			elasticService.refreshElasticForProductId(id);
 		}
 		logger.info("Update {}", product);
 		return modelMapper.map(product, ProductDTO.class);
@@ -91,17 +91,9 @@ public class ProductService {
 
 	public void deleteProduct(Long id) throws ResourceNotFoundException {
 		logger.info("Delete by id {}", id);
-		Product product = productRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Product not found for this id :: " + id));
-		productRepository.delete(product);
-		refreshElasticForProductId(id);
+		productRepository.deleteById(id);
+		elasticService.refreshElasticForProductId(id);
 
-	}
-
-	public void refreshElasticForProductId(Long id) {
-		List<Long> ids = productRepository.getOrderIds(id);
-		logger.info("Refresh elastic by product id {}", id);
-		elasticService.refreshOrders(ids);
 	}
 
 }

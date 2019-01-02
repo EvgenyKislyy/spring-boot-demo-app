@@ -37,6 +37,9 @@ public class OrderItemService {
 	@Autowired
 	private ModelMapper modelMapper;
 
+	@Autowired
+	private ElasticService elasticService;
+
 	public List<OrderItemDTO> findAll() {
 		List<OrderItemDTO> orderItems = new ArrayList<>();
 		for (OrderItem orderItem : orderItemRepository.findAll()) {
@@ -83,7 +86,7 @@ public class OrderItemService {
 		orderItem.setQuantity(orderItemDTO.getQuantity());
 		if (productNameChanged) {
 			Long productID = orderItemDTO.getProductId();
-			productService.refreshElasticForProductId(productID);
+			elasticService.refreshElasticForProductId(productID);
 		}
 	}
 
@@ -100,12 +103,11 @@ public class OrderItemService {
 	public Map<String, Boolean> delete(Long id) throws ResourceNotFoundException {
 		OrderItem orderItem = orderItemRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Order item not found for this id :: " + id));
-
-		orderItemRepository.deleteById(id);
 		if (orderItem.getOrder() != null) {
-			Long productID = orderItem.getProduct().getId();
-			productService.refreshElasticForProductId(productID);
+			elasticService.refreshOrder(orderItem.getOrder().getId());
 		}
+		orderItemRepository.deleteById(id);
+
 		logger.info("Delete {}", id);
 		Map<String, Boolean> response = new HashMap<>();
 		response.put("deleted", Boolean.TRUE);

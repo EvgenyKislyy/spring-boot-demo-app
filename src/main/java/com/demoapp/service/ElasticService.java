@@ -28,6 +28,12 @@ public class ElasticService {
 	@Autowired
 	private OrderRepository orderRepository;
 
+	public void refreshElasticForProductId(Long id) {
+		List<Long> ids = orderRepository.getOrderIdsByProductId(id);
+		logger.info("Refresh elastic by product id {}", id);
+		refreshOrders(ids);
+	}
+
 	public void refreshOrder(Long id) {
 		try {
 			List<Product> products = orderRepository.getOrderProductNames(id).stream().map(n -> new Product(n))
