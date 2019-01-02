@@ -12,5 +12,4 @@ public interface EsOrderRepository extends ElasticsearchRepository<Order, String
 
 	List<Order> findByProductsName(String name);
 
-	void removeByOrderId(Long orderId);
 }

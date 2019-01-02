@@ -57,7 +57,7 @@ public class ElasticService {
 
 	public void delete(Long id) {
 		try {
-			eOrderRepository.removeByOrderId(id);
+			eOrderRepository.deleteById(id.toString());
 			logger.info("The order {} was removed", id);
 		} catch (NoNodeAvailableException e) {
 			elasticNotAvailable();
