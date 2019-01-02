@@ -58,8 +58,7 @@ public class OrderService {
 		order = saveOrderItems(orderDTO.getOrderItems(), order);
 		logger.info("Save {}", order);
 
-		List<String> productNames = orderRepository.getOrderProductNames(order.getId());
-		elasticService.insert(order.getId(), productNames);
+		elasticService.refreshOrder(order.getId());
 		return map(order);
 
 	}
@@ -76,8 +75,7 @@ public class OrderService {
 		}
 		logger.info("Update {}", order);
 
-		List<String> productNames = orderRepository.getOrderProductNames(order.getId());
-		elasticService.insert(order.getId(), productNames);
+		elasticService.refreshOrder(order.getId());
 		return map(order);
 
 	}

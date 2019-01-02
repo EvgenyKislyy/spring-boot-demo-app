@@ -51,9 +51,4 @@ public class Controller {
 		elasticService.refresh();
 	}
 
-	@PostMapping
-	public void setrandomdata() {
-		elasticService.insert(1L, List.of("Nam1e", "name2", "name3", "name4"));
-	}
-
 }

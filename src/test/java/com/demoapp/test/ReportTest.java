@@ -42,7 +42,7 @@ public class ReportTest extends BaseTest {
 		SimpleDateFormat sr = new SimpleDateFormat("yyyy-MM-dd");
 		sr.parse(date);
 
-		assertEquals(Double.valueOf(48), report.get(date));
+		assertEquals(Double.valueOf(48), report.get(date)); // 12 + 36
 
 	}
 

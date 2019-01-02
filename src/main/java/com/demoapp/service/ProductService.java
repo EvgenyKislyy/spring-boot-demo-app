@@ -101,7 +101,7 @@ public class ProductService {
 	public void refreshElasticForProductId(Long id) {
 		List<Long> ids = productRepository.getOrderIds(id);
 		logger.info("Refresh elastic by product id {}", id);
-		elasticService.refreshOrderState(ids);
+		elasticService.refreshOrders(ids);
 	}
 
 }

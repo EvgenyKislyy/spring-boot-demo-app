@@ -121,6 +121,7 @@ public class OrderTest extends BaseTest {
 		assertEquals(2, getProducts().size());
 
 		deleteOrder(order2Id);
+		orders = getOrders();
 
 		assertEquals(0, orders.size());
 		assertEquals(0, getOrderItems().size());

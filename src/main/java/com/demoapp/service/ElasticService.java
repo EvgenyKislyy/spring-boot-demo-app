@@ -28,11 +28,12 @@ public class ElasticService {
 	@Autowired
 	private OrderRepository orderRepository;
 
-	public void insert(Long id, List<String> names) {
+	public void refreshOrder(Long id) {
 		try {
-			List<Product> products = names.stream().map(n -> new Product(n)).collect(Collectors.toList());
+			List<Product> products = orderRepository.getOrderProductNames(id).stream().map(n -> new Product(n))
+					.collect(Collectors.toList());
 			eOrderRepository.save(new Order(id, products));
-			logger.info("Names {} were inserted into order {}", names, id);
+			logger.info("Names {} were inserted into order {}", products, id);
 		} catch (NoNodeAvailableException e) {
 			elasticNotAvailable();
 		}
@@ -58,13 +59,11 @@ public class ElasticService {
 		}
 	}
 
-	public void refreshOrderState(List<Long> ids) {
+	public void refreshOrders(List<Long> ids) {
 		logger.error("Refreshing elastic for orders: {}", ids);
 		try {
 			for (Long orderId : ids) {
-				delete(orderId);
-				List<String> names = orderRepository.getOrderProductNames(orderId);
-				insert(orderId, names);
+				refreshOrder(orderId);
 			}
 		} catch (NoNodeAvailableException e) {
 			elasticNotAvailable();
@@ -78,7 +77,7 @@ public class ElasticService {
 
 	public void refresh() {
 		eOrderRepository.deleteAll();
-		refreshOrderState(orderRepository.getAllOrderIds());
+		refreshOrders(orderRepository.getAllOrderIds());
 	}
 
 	@EventListener(ApplicationReadyEvent.class)
