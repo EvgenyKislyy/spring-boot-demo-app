@@ -81,22 +81,17 @@ public class OrderItemService {
 			orderItem.setProduct(productRepository.findById(orderItemDTO.getProductId())
 					.orElseThrow(() -> new ResourceNotFoundException(
 							"Product not found for this id :: " + orderItemDTO.getProductId())));
-			elasticService.refreshProduct(orderItemDTO.getProductId());
-			// update for current product name
 		}
-		if (orderItem.getProduct() != null) {
-			elasticService.refreshOrder(orderItem.getProduct().getId());
-			// update for previous product name
-		}
+
 		if (orderItemDTO.getOrderId() != null) {
 			orderItem.setOrder(
 					orderRepository.findById(orderItemDTO.getOrderId()).orElseThrow(() -> new ResourceNotFoundException(
 							"Order not found for this id :: " + orderItemDTO.getOrderId())));
-			elasticService.refreshOrder(orderItemDTO.getProductId());
+			elasticService.refreshOrder(orderItemDTO.getOrderId());
 			// update for new order
 		}
 		if (orderItem.getId() != null) {
-			elasticService.refreshOrder(orderItemDTO.getProductId());
+			elasticService.refreshOrder(orderItem.getId());
 			// update for previous order
 		}
 		orderItem.setQuantity(orderItemDTO.getQuantity());
